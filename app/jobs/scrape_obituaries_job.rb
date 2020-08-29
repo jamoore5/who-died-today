@@ -4,7 +4,7 @@ class ScrapeObituariesJob <  Struct.new(:funeral_home, :url)
     browser.goto(url)
     obituaries = scrape(browser, funeral_home)
 
-    obituaries.map { |obit| Obituary.first_or_initialize(obit).save! }
+    obituaries.map { |obit| Obituary.where(name: obit[:name], dod: obit[:dod], funeral_home: obit[:funeral_home]).first_or_create { |o| o.link = obit[:link]}}
   ensure
     browser.close if browser.present?
   end

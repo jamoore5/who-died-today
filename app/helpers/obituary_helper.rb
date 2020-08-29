@@ -1,0 +1,2 @@
+module ObituaryHelper
+end
