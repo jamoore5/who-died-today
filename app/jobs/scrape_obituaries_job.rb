@@ -1,12 +1,24 @@
 class ScrapeObituariesJob <  Struct.new(:funeral_home, :url)
   def perform
-    browser = Watir::Browser.new :firefox
+    browser = get_browser
     browser.goto(url)
     obituaries = scrape(browser, funeral_home)
 
     obituaries.map { |obit| Obituary.where(name: obit[:name], dod: obit[:dod], funeral_home: obit[:funeral_home]).first_or_create { |o| o.link = obit[:link]}}
   ensure
     browser.close if browser.present?
+  end
+
+  def get_browser
+    return Watir::Browser.new :firefox unless Rails.env.production?
+
+    args = %w[--disable-infobars --headless window-size=1600,1200 --no-sandbox --disable-gpu]
+    options = {
+       binary: ENV['GOOGLE_CHROME_BIN'],
+       prefs: { password_manager_enable: false, credentials_enable_service: false },
+       args:  args
+    }    
+    Watir::Browser.new(:chrome, options: options)
   end
 
   def scrape(browser, funeral_home)
