@@ -23,9 +23,8 @@ class ScrapeFuneralHomesJob
   ]
 
   def perform
-    @@funeral_homes.each do |site| 
-      job = ScrapeObituariesJob.new(site[:funeral_home], site[:url])
-      job.perform
+    @@funeral_homes.each do |site|
+      Scrapers::FuneralHomeScraper.scrape(site[:url], site[:funeral_home])
     end
   end
 end
