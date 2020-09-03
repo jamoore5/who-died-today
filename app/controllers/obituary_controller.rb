@@ -1,5 +1,6 @@
 class ObituaryController < ApplicationController
   def index
-    @obits = Obituary.order('dod DESC').first(50)
+    @recent_obits = Obituary.recent
+    @past_obits = Obituary.past.first(25)
   end
 end
