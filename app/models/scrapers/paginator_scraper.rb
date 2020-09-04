@@ -9,8 +9,7 @@ class Scrapers::PaginatorScraper < Scrapers::ScraperBase
   attr_accessor :name, :lifespan
 
   def scrape_obituaries(&block)
-    raise 'site does not have pagation' unless pagation?
-    while true
+    each_page do
       get_obituaries.each do |obit_element|
         begin
           next unless obit_element.class_name == 'obit-item'
@@ -18,7 +17,13 @@ class Scrapers::PaginatorScraper < Scrapers::ScraperBase
           yield obit
         end
       end
+    end
+  end
 
+  def each_page
+    raise 'site does not have pagation' unless pagation?
+    while true
+      yield
       break unless has_next_page?
       next_page
     end
